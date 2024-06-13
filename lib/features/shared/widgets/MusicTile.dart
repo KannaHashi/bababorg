@@ -16,11 +16,13 @@ class MusicTile extends StatelessWidget {
       title: Text(
         songModel.displayNameWOExt,
         style:
-            const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+            const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         overflow: TextOverflow.ellipsis,
       ),
       subtitle: Text(songModel.additionalSongInfo),
-      trailing: const Icon(Icons.more_horiz),
+      trailing: GestureDetector(
+        child: const Icon(Icons.more_horiz),
+      ),
       leading: QueryArtworkWidget(
         id: songModel.id,
         type: ArtworkType.AUDIO,

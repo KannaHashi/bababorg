@@ -19,6 +19,8 @@ dependencies:
   audioplayers: ^6.0.0
   just_audio_background: ^0.0.1-beta.12
   provider: ^6.1.2
+  google_fonts: ^6.2.1
+  carousel_slider: ^4.2.1
 
 dev_dependencies:
   flutter_test:

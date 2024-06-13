@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../../../../provider/song_model_provider.dart';
 import '../../widgets/MusicTile.dart';
 import 'NowPlaying.dart';
+import '../../widgets/Navbar.dart';
 
 class AllSongs extends StatefulWidget {
   const AllSongs({Key? key}) : super(key: key);
@@ -17,42 +18,44 @@ class AllSongs extends StatefulWidget {
 }
 
 class _AllSongsState extends State<AllSongs> {
+  final TextEditingController _searchController = TextEditingController();
+
   final OnAudioQuery _audioQuery = OnAudioQuery();
   final AudioPlayer _audioPlayer = AudioPlayer();
   List<SongModel> allSongs = [];
-  bool _permissionsGranted = false;
-
-  @override
-  void initState() {
-    super.initState();
-    requestPermission();
-  }
-
-  Future<void> requestPermission() async {
-    if (Platform.isAndroid) {
-      bool permissionStatus = await _audioQuery.permissionsStatus();
-      if (!permissionStatus) {
-        permissionStatus = await _audioQuery.permissionsRequest();
-      }
-      setState(() {
-        _permissionsGranted = permissionStatus;
-      });
-    }
-  }
-
+  
   @override
   Widget build(BuildContext context) {
+    int currentSongId = context.watch<SongModelProvider>().id;
+    // int currentIndex = context.watch<BottomNavigationBarExample>().currentIndex;
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.deepPurple[800],
-        title: const Text(
-          "Bababorggggg Music Player",
-          style: TextStyle(color: Colors.white),
+        centerTitle: true,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.deepPurple, Colors.purple.shade300],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
         ),
-        elevation: 2,
+        title: Container(margin: const EdgeInsets.fromLTRB(8, 20, 8, 20),
+          child: TextField(
+            controller: _searchController,
+            style: const TextStyle(color: Colors.white),
+            cursorColor: Colors.white,
+            decoration: InputDecoration(
+              hintText: 'Search song...',
+              hintStyle: TextStyle(color: Colors.white54),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(50)),
+              icon: Icon(Icons.search_rounded)
+            ),
+        )
       ),
-      body: _permissionsGranted
-          ? FutureBuilder<List<SongModel>>(
+      ),
+      body: FutureBuilder<List<SongModel>>(
               future: _audioQuery.querySongs(
                 sortType: null,
                 orderType: OrderType.ASC_OR_SMALLER,
@@ -101,41 +104,63 @@ class _AllSongsState extends State<AllSongs> {
                         );
                       },
                     ),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SongPage(
-                                      songModelList: allSongs,
-                                      audioPlayer: _audioPlayer)));
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.fromLTRB(0, 0, 15, 15),
-                          child: NeuBox(
-                            child: Column(
-                              children: [ 
-                                Row(
-                                  children: [
-                                    MusicTile(songModel: SongModelProvider._id ? SongModelProvider._id)
-                                  ],
-                                )
-                              ],
-                            )
-                            )
-                          )
+                    if (currentSongId != 0)
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: GestureDetector(
+                          onTap: () {
+                            SongModel? currentSong = allSongs.firstWhere(
+                                (song) => song.id == currentSongId,);
+                            if (currentSong != null) {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => SongPage(
+                                          songModelList: [currentSong],
+                                          audioPlayer: _audioPlayer)));
+                            }
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(15, 0, 15, 8),
+                            child: Card(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ListTile(
+                                    leading: QueryArtworkWidget(
+                                      id: currentSongId,
+                                      type: ArtworkType.AUDIO,
+                                      nullArtworkWidget: Icon(Icons.music_note),
+                                    ),
+                                    title: Text(
+                                      allSongs
+                                          .firstWhere((song) =>
+                                              song.id == currentSongId)
+                                          .title,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    subtitle: Text(
+                                      allSongs
+                                          .firstWhere((song) =>
+                                              song.id == currentSongId)
+                                          .artist ?? "Unknown Artist",
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    trailing: CircleAvatar(
+                                      child: Icon(Icons.play_arrow_rounded),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
                   ],
                 );
               },
             )
-          : const Center(
-              child: Text('Memerlukan izin untuk mengakses file audio'),
-            ),
+          // bottomNavigationBar: BottomNavigationBarExample(selectedIndex: currentIndex)
     );
   }
 }

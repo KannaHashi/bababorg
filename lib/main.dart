@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:bababorg/provider/song_model_provider.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'features/shared/ui/screens/AllSongs.dart';
+import 'Home.dart';
 
 Future<void> main() async {
   await JustAudioBackground.init(
@@ -26,11 +28,17 @@ class MyApp extends StatelessWidget {
       title: 'Music Player',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: Colors.deepPurple,
-        primarySwatch: Colors.orange,
-        useMaterial3: true
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 42, 48, 82), brightness: Brightness.dark),
+        textTheme: TextTheme(
+          displayLarge: const TextStyle(
+            fontSize: 15,
+            color: Colors.white
+          ),
+          bodyMedium: GoogleFonts.poppins(color: Colors.white)
+        )
       ),
-      home: const AllSongs(),
+      home: const Home(),
     );
   }
 }

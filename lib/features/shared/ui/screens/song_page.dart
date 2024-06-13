@@ -22,6 +22,8 @@ class _SongPageState extends State<SongPage> {
   Duration _position = const Duration();
 
   bool _isPlaying = false;
+  bool get isPlaying => _isPlaying;
+
   List<AudioSource> songList = [];
 
   int currentIndex = 0;
@@ -70,11 +72,13 @@ class _SongPageState extends State<SongPage> {
           });
         }
       });
+      
       widget.audioPlayer.positionStream.listen((position) {
         setState(() {
           _position = position;
         });
       });
+
       listenToEvent();
       listenToSongIndex();
     } on Exception catch (_) {
@@ -121,7 +125,7 @@ class _SongPageState extends State<SongPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      // backgroundColor: Colors.grey[300],
       body: SafeArea(
               child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -143,7 +147,7 @@ class _SongPageState extends State<SongPage> {
                       SizedBox(
                         height: 60,
                         width: 60,
-                        child: NeuBox(child: Icon(Icons.menu)),
+                        child: NeuBoxDark(child: Icon(Icons.menu)),
                       ),
                     ],
                   ),
@@ -151,7 +155,7 @@ class _SongPageState extends State<SongPage> {
                   const SizedBox(height: 25),
 
                   // cover art, artist name, song name
-                  NeuBox(
+                  NeuBoxDark(
                     child: Column(
                       children: [
                         const Center(
@@ -166,19 +170,19 @@ class _SongPageState extends State<SongPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    widget.songModelList[currentIndex].artist.toString(),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                      color: Colors.grey.shade700,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Text(
                                     widget.songModelList[currentIndex].displayNameWOExt,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 22,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    widget.songModelList[currentIndex].artist.toString(),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      color: Colors.grey.shade200,
                                     ),
                                   ),
                                 ],
@@ -243,7 +247,7 @@ class _SongPageState extends State<SongPage> {
                     child: Row(
                       children: [
                         Expanded(
-                          child: NeuBox(
+                          child: NeuBoxDark(
                             child: IconButton(
                               onPressed: () {
                                 if (widget.audioPlayer.hasPrevious) {
@@ -260,7 +264,7 @@ class _SongPageState extends State<SongPage> {
                           flex: 2,
                           child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: 20.0),
-                            child: NeuBox(
+                            child: NeuBoxDark(
                               child: IconButton(
                                 onPressed: () {
                                   setState(() {
@@ -280,7 +284,7 @@ class _SongPageState extends State<SongPage> {
                           ),
                         ),
                         Expanded(
-                          child: NeuBox(
+                          child: NeuBoxDark(
                             child: IconButton(
                               onPressed: () {
                                 if (widget.audioPlayer.hasNext) {
@@ -313,8 +317,8 @@ class ArtWorkWidget extends StatelessWidget {
     return QueryArtworkWidget(
       id: context.watch<SongModelProvider>().id,
       type: ArtworkType.AUDIO,
-      artworkHeight: 200,
-      artworkWidth: 200,
+      artworkHeight: 500,
+      artworkWidth: 500,
       artworkFit: BoxFit.cover,
       nullArtworkWidget: Image.asset('lib/images/oke.jpeg')
     );

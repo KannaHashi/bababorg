@@ -1,5 +1,11 @@
 import 'dart:io';
 
+import 'package:bababorg/features/shared/ui/screens/Albums.dart';
+import 'package:bababorg/features/shared/ui/screens/Artist.dart';
+import 'package:bababorg/features/shared/ui/screens/Cam.dart';
+import 'package:bababorg/features/shared/ui/screens/Library/Folder.dart';
+import 'package:bababorg/features/shared/ui/screens/Playlist.dart';
+import 'package:bababorg/features/shared/ui/screens/Settings/Settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -15,6 +21,7 @@ import 'package:bababorg/features/shared/ui/screens/AllSongs.dart';
 import 'package:bababorg/provider/song_model_provider.dart';
 import 'package:bababorg/features/shared/ui/screens/song_page.dart';
 import 'package:bababorg/features/shared/ui/screens/Library.dart';
+import 'package:bababorg/features/shared/ui/screens/MoodSync.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -23,7 +30,7 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
 
   final OnAudioQuery _audioQuery = OnAudioQuery();
@@ -32,10 +39,14 @@ class _HomeState extends State<Home> {
   List<SongModel> allSongs = [];
   bool _permissionsGranted = false;
 
+  late TabController _tabController;
+  PageController _pageController = PageController();
+
   @override
   void initState() {
     super.initState();
     requestPermission();
+    _tabController = TabController(vsync: this, length: 5);
   }
 
   Future<void> requestPermission() async {
@@ -50,63 +61,91 @@ class _HomeState extends State<Home> {
     }
   }
 
+  var title = '';
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[
     Library(),
     AllSongs(),
-    Text(
-      'Index 2: Profile',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 2: Profile',
-      style: optionStyle,
-    ),
+    Moodsync(),
+    Playlist(),
+    Settings(),
   ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      if (index == 0) {
+        title = 'Bababorg';
+      } else if (index == 1) {
+        title = 'Songs';
+      } else if (index == 2) {
+        title = 'Find music with face expression';
+      } else if (index == 3) {
+        title = 'Playlist';
+      } else if (index == 4) {
+        title = 'Settings';
+      }
     });
   }
 
   Widget build(BuildContext context) {
     int currentSongId = context.watch<SongModelProvider>().id;
     int currentIndex = 0;
+    Size size = MediaQuery.of(context).size;
 
-    return Scaffold(
-      body: _permissionsGranted
-          ? SafeArea(
-            child:  _widgetOptions.elementAt(_selectedIndex)
-          )
-          : const Center(
-              child: Text('Memerlukan izin untuk mengakses file audio'),
+    return DefaultTabController(
+      initialIndex: 0,
+      length: 5,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            '$title' != '' ? '$title' : 'MoodSync',
+          ),
+          titleTextStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Cam()
+                    ),
+                  );
+                },
+                icon: Icon(Icons.emoji_emotions_outlined)),
+            Icon(
+              // onPressed: (){},
+              Icons.more_vert_sharp,
             ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.library_music_rounded),
-            label: 'Library',
+          ],
+          bottom: TabBar(
+            dividerHeight: 0,
+            controller: _tabController,
+            tabs: [
+              Tab(icon: Icon(Icons.library_music)),
+              Tab(icon: Icon(Icons.music_note)),
+              Tab(icon: Icon(Icons.album)),
+              Tab(icon: Icon(Icons.person)),
+              Tab(icon: Icon(Icons.settings)),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.queue_music_outlined),
-            label: 'Songs',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.face_retouching_natural),
-            label: 'Emo',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_4),
-            label: 'Library',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.deepPurple[300],
-        unselectedItemColor: Colors.white,
-        onTap: _onItemTapped,
+        ),
+        body: _permissionsGranted
+            ? TabBarView(
+                controller: _tabController,
+                children: <Widget>[
+                  SafeArea(child: Library()),
+                  SafeArea(child: AllSongs()),
+                  SafeArea(child: Albums()),
+                  SafeArea(child: Artist()),
+                  SafeArea(child: Settings()),
+                ],
+              )
+            : const Center(
+                child: Text('Memerlukan izin untuk mengakses file audio'),
+              ),
       ),
     );
   }

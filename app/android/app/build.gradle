@@ -55,6 +55,15 @@ android {
     }
 }
 
+// dependencies {
+//     // Duplicate class androidx.lifecycle.ViewModelLazy found in modules jetified-lifecycle-viewmodel-ktx-2.3.0-runtime
+//     // (androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0) and lifecycle-viewmodel-2.5.0-runtime (androidx.lifecycle:lifecycle-viewmodel:2.5.0)
+//     // Ref - https://stackoverflow.com/a/74869127/7245977.
+//     def lifecycle_version = "2.5.1"
+//     implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
+//     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+// }
+
 flutter {
     source = "../.."
 }

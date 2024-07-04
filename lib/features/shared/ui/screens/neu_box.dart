@@ -48,3 +48,20 @@ class NeuBoxDark extends StatelessWidget {
     );
   }
 }
+
+class NeuBoxDark2 extends StatelessWidget {
+  final child;
+  const NeuBoxDark2({Key? key, required this.child}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      child: Center(child: child),
+      decoration: BoxDecoration(
+        // color: Colors.grey[300],
+        borderRadius: BorderRadius.circular(12),
+      ),
+    );
+  }
+}

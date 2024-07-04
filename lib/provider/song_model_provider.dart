@@ -4,6 +4,13 @@ import 'package:on_audio_query/on_audio_query.dart';
 class SongModelProvider with ChangeNotifier {
   Duration _duration = const Duration();
   Duration _position = const Duration();
+  
+  List<SongModel> allSongs = [];
+  List<SongModel> get songList => allSongs;
+
+  void setSongs(List<SongModel> allsong) {
+    allSongs = allsong;
+  }
 
   int _id = 0;
   bool _isPlaying = false;

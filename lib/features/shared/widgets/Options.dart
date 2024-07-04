@@ -12,8 +12,10 @@ class MusicTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    return Expanded(
+    Size size = MediaQuery.of(context).size;
+    return Container(
+      height: size.height / 6,
+      width: size.width / 3,
       child: ListTile(
         isThreeLine: true,
         title: Row(
@@ -23,25 +25,18 @@ class MusicTile extends StatelessWidget {
           children: [
             Text(
               songModel.title,
-              style: TextStyle(
-                  fontSize: width / 30,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.white),
               overflow: TextOverflow.ellipsis,
             ),
             Text(
               songModel.album.toString(),
-              style: TextStyle(fontSize: width / 40),
+              style:
+                  TextStyle(fontSize: MediaQuery.of(context).size.width / 40),
             )
           ],
         ),
-        subtitle: Text(
-          songModel.additionalSongInfo,
-          style: TextStyle(
-              fontSize: width / 40,
-              color: Colors.white),
-        ),
-        trailing: Icon(Icons.more_vert),
+        subtitle: Text(songModel.additionalSongInfo),
         leading: QueryArtworkWidget(
           id: songModel.id,
           type: ArtworkType.AUDIO,

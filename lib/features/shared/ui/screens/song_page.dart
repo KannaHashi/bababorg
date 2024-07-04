@@ -8,25 +8,35 @@ import '../../../../provider/song_model_provider.dart';
 import 'package:bababorg/features/shared/ui/screens/neu_box.dart';
 
 class SongPage extends StatefulWidget {
+  final int index;
   final List<SongModel> songModelList;
   final AudioPlayer audioPlayer;
 
   const SongPage(
-      {Key? key, required this.songModelList, required this.audioPlayer})
+      {Key? key,
+      required this.songModelList,
+      required this.audioPlayer,
+      required this.index})
       : super(key: key);
 
   @override
-  State<SongPage> createState() => _SongPageState();
+  State<SongPage> createState() => SongPageState();
 }
 
-class _SongPageState extends State<SongPage> {
+class SongPageState extends State<SongPage> {
   Duration _duration = const Duration();
   Duration _position = const Duration();
 
   bool _isPlaying = false;
+  late LoopMode loops;
   bool get isPlaying => _isPlaying;
+  
+  IconData loopsIcon = Icons.repeat;
+
+  late var playlist;
 
   List<AudioSource> songList = [];
+  List<AudioSource> queue = [];
 
   int currentIndex = 0;
 
@@ -54,18 +64,28 @@ class _SongPageState extends State<SongPage> {
             tag: MediaItem(
               id: element.id.toString(),
               album: element.album ?? "No Album",
-              title: element.displayNameWOExt,
+              title: element.title,
               artUri: Uri.parse(element.id.toString()),
             ),
           ),
         );
       }
 
-      widget.audioPlayer.setAudioSource(
-        ConcatenatingAudioSource(children: songList),
+      playlist = ConcatenatingAudioSource(
+        shuffleOrder: DefaultShuffleOrder(),
+        useLazyPreparation: true,
+        children: songList,
       );
-      
+
+      widget.audioPlayer.setAudioSource(
+          ConcatenatingAudioSource(
+              children: songList,
+              useLazyPreparation: true,
+              shuffleOrder: DefaultShuffleOrder()),
+          initialIndex: widget.index);
+
       widget.audioPlayer.play();
+      widget.audioPlayer.setLoopMode(LoopMode.all);
       _isPlaying = true;
 
       widget.audioPlayer.durationStream.listen((duration) {
@@ -79,6 +99,12 @@ class _SongPageState extends State<SongPage> {
       widget.audioPlayer.positionStream.listen((position) {
         setState(() {
           _position = position;
+        });
+      });
+
+      widget.audioPlayer.loopModeStream.listen((loop) {
+        setState(() {
+          loops = loop;
         });
       });
 
@@ -206,12 +232,44 @@ class _SongPageState extends State<SongPage> {
           const SizedBox(height: 30),
 
           // start time, shuffle button, repeat button, end time
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text('0:00'),
-              Icon(Icons.shuffle),
-              Icon(Icons.repeat),
+              IconButton(
+                  onPressed: () {
+                    setState(() {
+                      if (_isPlaying) {
+                        widget.audioPlayer.shuffle();
+                      } else {
+                        widget.audioPlayer.shuffle();
+                      }
+                      _isPlaying =
+                          context.read<SongModelProvider>().setPlaying(true);
+                    });
+                  },
+                  icon: Icon(Icons.shuffle)),
+              IconButton(
+                  onPressed: () {
+                    setState(() {
+                      if (loops == LoopMode.all) {
+                        widget.audioPlayer.setLoopMode(LoopMode.one);
+                        loops = LoopMode.one;
+                        loopsIcon = Icons.repeat_one;
+                      } else if (loops == LoopMode.one) {
+                        widget.audioPlayer.setLoopMode(LoopMode.off);
+                        loops == LoopMode.off;
+                        loopsIcon = Icons.gps_off_sharp;
+                      } else if (loops == LoopMode.off) {
+                        widget.audioPlayer.setLoopMode(LoopMode.all);
+                        loops == LoopMode.all;
+                        loopsIcon = Icons.repeat;
+                      }
+                      _isPlaying =
+                          context.read<SongModelProvider>().setPlaying(true);
+                    });
+                  },
+                  icon: Icon(loopsIcon)),
               Text('4:22')
             ],
           ),
@@ -312,9 +370,11 @@ class ArtWorkWidget extends StatelessWidget {
     return QueryArtworkWidget(
         id: context.watch<SongModelProvider>().id,
         type: ArtworkType.AUDIO,
+        quality: 100,
+        artworkQuality: FilterQuality.high,
         artworkHeight: 500,
         artworkWidth: 500,
         artworkFit: BoxFit.cover,
-        nullArtworkWidget: Image.asset('lib/images/oke.jpeg'));
+        nullArtworkWidget: Image.asset('assets/images/oke.jpeg'));
   }
 }

@@ -3,10 +3,11 @@ import 'package:on_audio_query/on_audio_query.dart';
 extension ExtendedSongModel on SongModel {
   get additionalSongInfo {
     String artistInfo = artist.toString();
+    String albums = album.toString();
     String songTime = _millisToMinutesAndSeconds(duration);
     String artistName =
         artistInfo == "<unknown>" ? "Unknown Artist" : artistInfo;
-    return "$artistName\t\t$songTime";
+    return "$artistName\t\t";
   }
 
   _millisToMinutesAndSeconds(millis) {

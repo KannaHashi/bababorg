@@ -1,3 +1,4 @@
+import 'package:bababorg/services/song_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:bababorg/provider/song_model_provider.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -7,7 +8,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'features/shared/ui/screens/AllSongs.dart';
 import 'Home.dart';
 
+SongHandler _songHandler = SongHandler();
+
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   await JustAudioBackground.init(
     androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
     androidNotificationChannelName: 'Audio playback',

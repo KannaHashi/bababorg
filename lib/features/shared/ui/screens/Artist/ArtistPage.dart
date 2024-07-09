@@ -1,31 +1,30 @@
+import 'package:bababorg/features/shared/ui/screens/song_page.dart';
+import 'package:bababorg/features/shared/widgets/MusicTile.dart';
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 
-import 'package:just_audio/just_audio.dart';
-import 'package:on_audio_query/on_audio_query.dart';
-import 'package:just_audio_background/just_audio_background.dart';
-
-import 'package:bababorg/features/shared/widgets/MusicTile.dart';
 import 'package:bababorg/features/shared/ui/screens/neu_box.dart';
-import 'package:bababorg/features/shared/ui/screens/song_page.dart';
 
-class AlbumPage extends StatefulWidget {
-  final String album;
-  final AlbumModel albumModel;
+class ArtistPage extends StatefulWidget {
+  final String artist;
+  final ArtistModel artistModel;
   final AudioPlayer audioPlayer;
 
-  const AlbumPage(
+  const ArtistPage(
       {Key? key,
       required this.audioPlayer,
-      required this.album,
-      required this.albumModel})
+      required this.artist,
+      required this.artistModel})
       : super(key: key);
 
   @override
-  State<AlbumPage> createState() => AlbumPageState();
+  State<ArtistPage> createState() => ArtistPageState();
 }
 
-class AlbumPageState extends State<AlbumPage> {
+class ArtistPageState extends State<ArtistPage> {
   Duration _duration = const Duration();
   Duration _position = const Duration();
 
@@ -55,7 +54,6 @@ class AlbumPageState extends State<AlbumPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    AlbumModel albumb = widget.albumModel;
     return Scaffold(
         // backgroundColor: Colors.grey[300],
         body: FutureBuilder<List<SongModel>>(
@@ -83,7 +81,7 @@ class AlbumPageState extends State<AlbumPage> {
               }
               // Filter songs based on albumId
               allSongs = item.data!
-                  .where((song) => song.album == widget.album)
+                  .where((song) => song.artist == widget.artist)
                   .toList();
               if (allSongs.isEmpty) {
                 return const Center(
@@ -109,7 +107,7 @@ class AlbumPageState extends State<AlbumPage> {
                           },
                           icon: const Icon(Icons.arrow_back_ios),
                         ),
-                        Text(widget.albumModel.album),
+                        Text(widget.artistModel.artist),
                         SizedBox(
                           height: 60,
                           width: 60,
@@ -126,8 +124,8 @@ class AlbumPageState extends State<AlbumPage> {
                         children: [
                           Center(
                             child: QueryArtworkWidget(
-                                id: widget.albumModel.id,
-                                type: ArtworkType.ALBUM,
+                                id: widget.artistModel.id,
+                                type: ArtworkType.ARTIST,
                                 quality: 100,
                                 artworkQuality: FilterQuality.high,
                                 artworkHeight: MediaQuery.of(context).size.height / 3,
@@ -146,7 +144,7 @@ class AlbumPageState extends State<AlbumPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      widget.albumModel.album,
+                                      widget.artistModel.artist,
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: size.width / 20,
@@ -154,7 +152,7 @@ class AlbumPageState extends State<AlbumPage> {
                                     ),
                                     const SizedBox(height: 6),
                                     Text(
-                                      widget.albumModel.artist.toString(),
+                                      widget.artistModel.artist.toString(),
                                       style: TextStyle(
                                           fontWeight: FontWeight.normal,
                                           fontSize: size.width / 30,

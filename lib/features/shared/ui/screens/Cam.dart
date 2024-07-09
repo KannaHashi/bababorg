@@ -50,8 +50,10 @@ class _CamState extends State<Cam> {
     await Tflite.loadModel(
       model: 'assets/model.tflite',
       labels: 'assets/labels.txt',
-      isAsset: true, // defaults to true, set to false to load resources outside assets
-      useGpuDelegate: false, // defaults to false, set to true to use GPU delegate
+      isAsset:
+          true, // defaults to true, set to false to load resources outside assets
+      useGpuDelegate:
+          false, // defaults to false, set to true to use GPU delegate
     );
   }
 
@@ -102,27 +104,31 @@ class _CamState extends State<Cam> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
-      body: Column(
-        children: [
-          cameraController != null && cameraController!.value.isInitialized && capturedImage == null
-              ? Container(
-                  alignment: Alignment.center,
-                  width: width,
-                  height: height * 0.5,
-                  child: CameraPreview(cameraController!),
-                )
-              : const Center(child: Text("Can't initialize device camera")),
-          if (capturedImage != null)
-            Container(
-              padding: EdgeInsets.all(16),
-              child: Image.file(File(capturedImage!.path)),
+      body: Container(
+        child: Column(
+          children: [
+            cameraController != null &&
+                    cameraController!.value.isInitialized &&
+                    capturedImage == null
+                ? Container(
+                    alignment: Alignment.center,
+                    width: width,
+                    height: height * 0.5,
+                    child: CameraPreview(cameraController!),
+                  )
+                : const Center(child: Text("Can't initialize device camera")),
+            if (capturedImage != null)
+              Container(
+                padding: EdgeInsets.all(16),
+                child: Image.file(File(capturedImage!.path)),
+              ),
+            SizedBox(height: height * 0.15),
+            Text(
+              output,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-          SizedBox(height: height * 0.15),
-          Text(
-            output,
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: captureImage,

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:async';
+import 'package:bababorg/features/shared/ui/screens/Artist/ArtistPage.dart';
 import 'package:bababorg/features/shared/widgets/ArtistTile.dart';
 import 'package:flutter/material.dart';
 
@@ -133,12 +134,16 @@ class _ArtistState extends State<Artist>
                       Iterable<SongModel> songs = allSongs
                           .takeWhile((song) => song.id >= currentSongId);
                       restart();
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => Art
-                      //   ),
-                      // );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ArtistPage(
+                            artist : item.data![index].artist,
+                            artistModel : item.data![index],
+                            audioPlayer: _audioPlayer,
+                          )
+                        ),
+                      );
                     },
                     onLongPress: () {
                       showMenu(
